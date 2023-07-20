@@ -11,7 +11,7 @@ export default function Post({ title, summary, cover, content, createdAt }) {
           {title}
         </h2>
         <p className='author--info'>
-          <a className='author--name' >Malvin Ndegwa</a>
+          <p className='author--name' >Malvin Ndegwa</p>
           <time>{formatISO9075(new Date(createdAt))}</time>
         </p>
         <p className='post--summary'>
