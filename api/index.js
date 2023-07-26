@@ -48,7 +48,10 @@ app.post('/login', async (req, res) => {
         //user logged in
         jwt.sign({ username, id: userDoc._id }, secret, {}, (err, token) => {
             if (err) throw err
-            res.cookie('token', token).json('ok')
+            res.cookie('token', token).json({
+                id: userDoc._id,
+                username
+            })
         })
     }
     else {
@@ -59,13 +62,20 @@ app.post('/login', async (req, res) => {
 
 
 // endpoint for verify if user is logged in
-// app.get('/profile', (req, res) => {
-//     const { token } = req.cookies
-//     jwt.verify(token, secret, {}, (err, info) => {
-//         if (err) throw err
-//         res.json(info)
-//     })
-// })
+app.get('/profile', (req, res) => {
+    const { token } = req.cookies
+    jwt.verify(token, secret, {}, (err, info) => {
+        if (err) throw err
+        res.json(info)
+    })
+})
+
+//endpoint for user logout
+
+app.post('/logout', (req, res) => {
+    res.cookie('token', '').json("ok")
+})
+
 
 //endpoint for posts
 app.post('/post', uploadMiddleware.single('files'), async (req, res) => {
@@ -95,8 +105,16 @@ app.post('/post', uploadMiddleware.single('files'), async (req, res) => {
 
 app.get('/post', async (req, res) => {
     res.json(await Post.find()
-    .sort({createdAt:-1}))
-    
+        .sort({ createdAt: -1 }))
+
+})
+
+//endpoint for fetching a single post in post page
+
+app.get('/post/:id', async (req, res) => {
+    const { id } = req.params
+    const postDoc = await Post.findById(id)
+    res.json(postDoc)
 })
 
 
